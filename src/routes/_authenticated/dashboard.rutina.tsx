@@ -384,34 +384,6 @@ function DayLoggerSheet({
     }
   }
 
-  // Fallback determinista (sin constraint único)
-  async function persistRow(exName: string, muscle: string, rows: SetRow[], position: number) {
-    if (!sessionId) return;
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) return;
-    const { data: existing } = await supabase
-      .from("exercise_logs")
-      .select("id")
-      .eq("session_id", sessionId)
-      .eq("exercise_name", exName)
-      .maybeSingle();
-    if (existing) {
-      await supabase
-        .from("exercise_logs")
-        .update({ sets: rows as any, muscle_group: muscle, position })
-        .eq("id", existing.id);
-    } else {
-      await supabase.from("exercise_logs").insert({
-        user_id: userData.user.id,
-        session_id: sessionId,
-        exercise_name: exName,
-        muscle_group: muscle,
-        position,
-        sets: rows as any,
-      });
-    }
-  }
-
   function updateSet(exName: string, idx: number, patch: Partial<SetRow>) {
     setLogs((prev) => {
       const arr = [...(prev[exName] ?? [])];
