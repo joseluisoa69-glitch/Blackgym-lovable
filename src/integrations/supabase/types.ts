@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      meal_plans: {
+        Row: {
+          carbs_g: number
+          created_at: string
+          fats_g: number
+          id: string
+          is_active: boolean
+          meals: Json
+          name: string
+          protein_g: number
+          total_calories: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          carbs_g: number
+          created_at?: string
+          fats_g: number
+          id?: string
+          is_active?: boolean
+          meals?: Json
+          name?: string
+          protein_g: number
+          total_calories: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          carbs_g?: number
+          created_at?: string
+          fats_g?: number
+          id?: string
+          is_active?: boolean
+          meals?: Json
+          name?: string
+          protein_g?: number
+          total_calories?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nutrition_profile: {
         Row: {
           activity_level: string | null
@@ -23,6 +65,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           dietary_pref: string | null
+          disliked_foods: string[] | null
           experience: string | null
           fats_g: number | null
           goal: string | null
@@ -30,6 +73,7 @@ export type Database = {
           is_breastfeeding: boolean | null
           is_pregnant: boolean | null
           medical_conditions: string | null
+          physical_limitations: string | null
           pregnancy_weeks: number | null
           protein_g: number | null
           target_calories: number | null
@@ -48,6 +92,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           dietary_pref?: string | null
+          disliked_foods?: string[] | null
           experience?: string | null
           fats_g?: number | null
           goal?: string | null
@@ -55,6 +100,7 @@ export type Database = {
           is_breastfeeding?: boolean | null
           is_pregnant?: boolean | null
           medical_conditions?: string | null
+          physical_limitations?: string | null
           pregnancy_weeks?: number | null
           protein_g?: number | null
           target_calories?: number | null
@@ -73,6 +119,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           dietary_pref?: string | null
+          disliked_foods?: string[] | null
           experience?: string | null
           fats_g?: number | null
           goal?: string | null
@@ -80,6 +127,7 @@ export type Database = {
           is_breastfeeding?: boolean | null
           is_pregnant?: boolean | null
           medical_conditions?: string | null
+          physical_limitations?: string | null
           pregnancy_weeks?: number | null
           protein_g?: number | null
           target_calories?: number | null
