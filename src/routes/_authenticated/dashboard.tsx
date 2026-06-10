@@ -46,7 +46,7 @@ function DashboardLayout() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Dumbbell className="h-5 w-5" strokeWidth={2.5} />
               </div>
-              <span className="font-display text-lg font-bold tracking-tight">FITFORGE</span>
+              <span className="font-display text-lg font-bold tracking-tight">BLACKGYM</span>
             </div>
           </div>
 
