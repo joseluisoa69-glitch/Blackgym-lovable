@@ -165,6 +165,7 @@ function FormularioPage() {
       dietary_pref: dietaryPref || null,
       medical_conditions: medical || null,
       physical_limitations: limitations || null,
+      diet_budget: dietBudget || "medium",
       ...macros,
       completed_at: new Date().toISOString(),
     });
