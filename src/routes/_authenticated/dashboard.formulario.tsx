@@ -383,7 +383,33 @@ function FormularioPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="lim">Limitaciones físicas, lesiones o dolores</Label>
+              <Label>Tipo de dieta según presupuesto</Label>
+              <p className="text-xs text-muted-foreground">
+                Ajustamos los alimentos sugeridos a lo que puedas conseguir localmente.
+              </p>
+              <RadioGroup
+                value={dietBudget}
+                onValueChange={(v) => setDietBudget(v as any)}
+                className="grid gap-2"
+              >
+                {([
+                  ["economic", "Económica", "Pollo, huevo, atún, carne molida, arroz, frijoles, avena, tortilla."],
+                  ["medium", "Media", "Pescado blanco, res magra, lácteos, frutas variadas, frutos secos básicos."],
+                  ["generous", "Generosa", "Salmón, mariscos, cortes premium, quesos finos, super-foods, snacks gourmet."],
+                ] as const).map(([v, label, desc]) => (
+                  <Label
+                    key={v}
+                    className={`cursor-pointer rounded-lg border p-3 transition ${
+                      dietBudget === v ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem value={v} className="sr-only" />
+                    <div className="font-display text-base font-bold">{label}</div>
+                    <div className="mt-0.5 text-xs text-muted-foreground">{desc}</div>
+                  </Label>
+                ))}
+              </RadioGroup>
+            </div>
               <Textarea
                 id="lim"
                 value={limitations}
