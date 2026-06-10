@@ -410,6 +410,9 @@ function FormularioPage() {
                 ))}
               </RadioGroup>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lim">Limitaciones físicas, lesiones o dolores</Label>
               <Textarea
                 id="lim"
                 value={limitations}
