@@ -71,7 +71,7 @@ function DashboardLayout() {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as "/dashboard"}
                 className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
                     ? "bg-primary text-primary-foreground shadow-glow"
