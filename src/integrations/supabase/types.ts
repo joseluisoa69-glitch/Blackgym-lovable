@@ -14,7 +14,185 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      nutrition_profile: {
+        Row: {
+          activity_level: string | null
+          allergies: string[] | null
+          bmr: number | null
+          carbs_g: number | null
+          completed_at: string | null
+          created_at: string
+          dietary_pref: string | null
+          experience: string | null
+          fats_g: number | null
+          goal: string | null
+          height_cm: number | null
+          is_breastfeeding: boolean | null
+          is_pregnant: boolean | null
+          medical_conditions: string | null
+          pregnancy_weeks: number | null
+          protein_g: number | null
+          target_calories: number | null
+          target_weight_kg: number | null
+          tdee: number | null
+          training_days_per_week: number | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          bmr?: number | null
+          carbs_g?: number | null
+          completed_at?: string | null
+          created_at?: string
+          dietary_pref?: string | null
+          experience?: string | null
+          fats_g?: number | null
+          goal?: string | null
+          height_cm?: number | null
+          is_breastfeeding?: boolean | null
+          is_pregnant?: boolean | null
+          medical_conditions?: string | null
+          pregnancy_weeks?: number | null
+          protein_g?: number | null
+          target_calories?: number | null
+          target_weight_kg?: number | null
+          tdee?: number | null
+          training_days_per_week?: number | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          bmr?: number | null
+          carbs_g?: number | null
+          completed_at?: string | null
+          created_at?: string
+          dietary_pref?: string | null
+          experience?: string | null
+          fats_g?: number | null
+          goal?: string | null
+          height_cm?: number | null
+          is_breastfeeding?: boolean | null
+          is_pregnant?: boolean | null
+          medical_conditions?: string | null
+          pregnancy_weeks?: number | null
+          protein_g?: number | null
+          target_calories?: number | null
+          target_weight_kg?: number | null
+          tdee?: number | null
+          training_days_per_week?: number | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          date_of_birth: string | null
+          display_name: string | null
+          gender: string | null
+          id: string
+          units: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          gender?: string | null
+          id: string
+          units?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          gender?: string | null
+          id?: string
+          units?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      routine_days: {
+        Row: {
+          day_index: number
+          exercises: Json
+          id: string
+          muscle_groups: string[]
+          routine_id: string
+          title: string
+        }
+        Insert: {
+          day_index: number
+          exercises?: Json
+          id?: string
+          muscle_groups?: string[]
+          routine_id: string
+          title: string
+        }
+        Update: {
+          day_index?: number
+          exercises?: Json
+          id?: string
+          muscle_groups?: string[]
+          routine_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_days_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routines: {
+        Row: {
+          created_at: string
+          days_per_week: number
+          goal: string | null
+          id: string
+          is_active: boolean
+          level: string | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_per_week: number
+          goal?: string | null
+          id?: string
+          is_active?: boolean
+          level?: string | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          days_per_week?: number
+          goal?: string | null
+          id?: string
+          is_active?: boolean
+          level?: string | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
