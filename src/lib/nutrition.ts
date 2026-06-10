@@ -1,21 +1,35 @@
 /**
  * Cálculos nutricionales:
  *  - BMR (Mifflin-St Jeor)
- *  - TDEE según nivel de actividad
+ *  - TDEE = BMR * factor de actividad cotidiana (NEAT) + energía de entrenamientos
  *  - Ajustes por embarazo / lactancia
  *  - Distribución de macros según objetivo
  */
 
 export type Gender = "male" | "female" | "other";
-export type Activity = "sedentary" | "light" | "moderate" | "active" | "very_active";
+// Actividad cotidiana SIN contar entrenamientos (los días de gym van aparte).
+export type Activity = "sedentary" | "moderate" | "active";
 export type Goal = "lose" | "maintain" | "gain" | "recomp";
 
 const ACTIVITY_FACTOR: Record<Activity, number> = {
-  sedentary: 1.2,
-  light: 1.375,
-  moderate: 1.55,
-  active: 1.725,
-  very_active: 1.9,
+  sedentary: 1.2, // oficina, mayormente sentado
+  moderate: 1.45, // mucho caminar, recados, de pie buena parte del día
+  active: 1.7, // trabajo físico (construcción, mensajería, etc.)
+};
+
+// kcal adicionales aproximadas por sesión de entrenamiento de fuerza ~60 min
+const KCAL_PER_TRAINING_DAY = 250;
+
+export const ACTIVITY_LABEL: Record<Activity, string> = {
+  sedentary: "Sedentario",
+  moderate: "Moderado",
+  active: "Activo",
+};
+
+export const ACTIVITY_DESC: Record<Activity, string> = {
+  sedentary: "Trabajo de oficina, la mayor parte del día sentado, poco caminar.",
+  moderate: "De pie o caminando varias horas, tareas domésticas, recados frecuentes.",
+  active: "Trabajo físico: construcción, mensajería, mesero, agricultura, etc.",
 };
 
 export function calcAge(dob: string | null | undefined): number {
@@ -43,19 +57,20 @@ export function calcMacros(opts: {
   age: number;
   gender: Gender;
   activity: Activity;
+  trainingDaysPerWeek: number;
   goal: Goal;
   isPregnant?: boolean;
   pregnancyWeeks?: number | null;
   isBreastfeeding?: boolean;
 }) {
   const bmr = calcBmr(opts.weightKg, opts.heightCm, opts.age, opts.gender);
-  let tdee = bmr * ACTIVITY_FACTOR[opts.activity];
+  const trainingKcalPerDay = (opts.trainingDaysPerWeek * KCAL_PER_TRAINING_DAY) / 7;
+  let tdee = bmr * ACTIVITY_FACTOR[opts.activity] + trainingKcalPerDay;
 
   // Ajustes embarazo
   if (opts.gender === "female" && opts.isPregnant && opts.pregnancyWeeks) {
-    if (opts.pregnancyWeeks >= 28) tdee += 450;          // 3er trimestre
-    else if (opts.pregnancyWeeks >= 14) tdee += 340;     // 2do trimestre
-    // 1er trimestre: sin extra significativo
+    if (opts.pregnancyWeeks >= 28) tdee += 450;
+    else if (opts.pregnancyWeeks >= 14) tdee += 340;
   }
   if (opts.gender === "female" && opts.isBreastfeeding) tdee += 500;
 

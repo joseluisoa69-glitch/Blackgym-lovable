@@ -8,13 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { calcAge, calcMacros, type Activity, type Gender, type Goal } from "@/lib/nutrition";
+import {
+  calcAge,
+  calcMacros,
+  ACTIVITY_LABEL,
+  ACTIVITY_DESC,
+  type Activity,
+  type Gender,
+  type Goal,
+} from "@/lib/nutrition";
 
 export const Route = createFileRoute("/_authenticated/dashboard/formulario")({
   component: FormularioPage,
@@ -28,11 +37,9 @@ function FormularioPage() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
 
-  // Profile fields (shared)
   const [gender, setGender] = useState<Gender | "">("");
   const [dob, setDob] = useState("");
 
-  // Nutrition fields
   const [heightCm, setHeightCm] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
@@ -44,10 +51,11 @@ function FormularioPage() {
   const [pregnancyWeeks, setPregnancyWeeks] = useState<string>("");
   const [isBreastfeeding, setIsBreastfeeding] = useState(false);
   const [allergiesText, setAllergiesText] = useState("");
+  const [dislikedText, setDislikedText] = useState("");
   const [dietaryPref, setDietaryPref] = useState("");
   const [medical, setMedical] = useState("");
+  const [limitations, setLimitations] = useState("");
 
-  // Hydrate from existing data so perfil <-> formulario stay sincronizados
   const { data: existing } = useQuery({
     queryKey: ["formulario_hydrate"],
     queryFn: async () => {
@@ -69,7 +77,17 @@ function FormularioPage() {
       setHeightCm(existing.n.height_cm?.toString() ?? "");
       setWeightKg(existing.n.weight_kg?.toString() ?? "");
       setTargetWeight(existing.n.target_weight_kg?.toString() ?? "");
-      setActivity((existing.n.activity_level as Activity) ?? "");
+      // legacy values normalized to the 3-tier scheme
+      const legacy = existing.n.activity_level as string | null;
+      const mapped: Activity | "" =
+        legacy === "sedentary"
+          ? "sedentary"
+          : legacy === "light" || legacy === "moderate"
+            ? "moderate"
+            : legacy === "active" || legacy === "very_active"
+              ? "active"
+              : "";
+      setActivity(mapped);
       setGoal((existing.n.goal as Goal) ?? "");
       setExperience((existing.n.experience as any) ?? "");
       setTrainingDays(existing.n.training_days_per_week?.toString() ?? "3");
@@ -77,8 +95,10 @@ function FormularioPage() {
       setPregnancyWeeks(existing.n.pregnancy_weeks?.toString() ?? "");
       setIsBreastfeeding(!!existing.n.is_breastfeeding);
       setAllergiesText((existing.n.allergies ?? []).join(", "));
+      setDislikedText(((existing.n as any).disliked_foods ?? []).join(", "));
       setDietaryPref(existing.n.dietary_pref ?? "");
       setMedical(existing.n.medical_conditions ?? "");
+      setLimitations((existing.n as any).physical_limitations ?? "");
     }
   }, [existing]);
 
@@ -86,7 +106,7 @@ function FormularioPage() {
     switch (step) {
       case 1: return gender !== "" && dob !== "";
       case 2: return heightCm !== "" && weightKg !== "";
-      case 3: return activity !== "" && goal !== "" && experience !== "";
+      case 3: return activity !== "" && goal !== "" && experience !== "" && trainingDays !== "";
       case 4:
         if (gender === "female" && isPregnant && !pregnancyWeeks) return false;
         return true;
@@ -110,22 +130,22 @@ function FormularioPage() {
       age,
       gender: gender as Gender,
       activity: activity as Activity,
+      trainingDaysPerWeek: parseInt(trainingDays),
       goal: goal as Goal,
       isPregnant: gender === "female" ? isPregnant : false,
       pregnancyWeeks: pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
       isBreastfeeding: gender === "female" ? isBreastfeeding : false,
     });
 
-    // 1) profiles
     const { error: pErr } = await supabase.from("profiles").upsert({
       id: userData.user.id,
       gender: gender as "male" | "female" | "other",
       date_of_birth: dob,
     });
 
-    // 2) nutrition_profile
-    const allergies = allergiesText
-      .split(",").map((s) => s.trim()).filter(Boolean);
+    const allergies = allergiesText.split(",").map((s) => s.trim()).filter(Boolean);
+    const disliked = dislikedText.split(",").map((s) => s.trim()).filter(Boolean);
+
     const { error: nErr } = await supabase.from("nutrition_profile").upsert({
       user_id: userData.user.id,
       height_cm: h,
@@ -139,8 +159,10 @@ function FormularioPage() {
       pregnancy_weeks: gender === "female" && isPregnant && pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
       is_breastfeeding: gender === "female" ? isBreastfeeding : false,
       allergies,
+      disliked_foods: disliked,
       dietary_pref: dietaryPref || null,
       medical_conditions: medical || null,
+      physical_limitations: limitations || null,
       ...macros,
       completed_at: new Date().toISOString(),
     });
@@ -212,20 +234,25 @@ function FormularioPage() {
 
         {step === 3 && (
           <>
-            <SectionTitle title="Actividad y objetivo" subtitle="Define cómo entrenas y a dónde quieres llegar." />
+            <SectionTitle title="Actividad y objetivo" subtitle="Tu nivel de actividad diario (sin contar el gym) y tu meta." />
 
             <div className="space-y-2">
-              <Label>Nivel de actividad</Label>
-              <Select value={activity} onValueChange={(v) => setActivity(v as Activity)}>
-                <SelectTrigger><SelectValue placeholder="Selecciona…" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sedentary">Sedentario (oficina, poco movimiento)</SelectItem>
-                  <SelectItem value="light">Ligero (1-3 días ejercicio)</SelectItem>
-                  <SelectItem value="moderate">Moderado (3-5 días)</SelectItem>
-                  <SelectItem value="active">Alto (6-7 días)</SelectItem>
-                  <SelectItem value="very_active">Muy alto (trabajo físico + entreno)</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Nivel de actividad cotidiana</Label>
+              <p className="text-xs text-muted-foreground">No incluye los días que entrenas — eso lo pones aparte abajo.</p>
+              <RadioGroup value={activity} onValueChange={(v) => setActivity(v as Activity)} className="grid gap-2">
+                {(["sedentary", "moderate", "active"] as const).map((a) => (
+                  <Label
+                    key={a}
+                    className={`cursor-pointer rounded-lg border p-3 transition ${
+                      activity === a ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem value={a} className="sr-only" />
+                    <div className="font-display text-base font-bold">{ACTIVITY_LABEL[a]}</div>
+                    <div className="mt-0.5 text-xs text-muted-foreground">{ACTIVITY_DESC[a]}</div>
+                  </Label>
+                ))}
+              </RadioGroup>
             </div>
 
             <div className="space-y-2">
@@ -258,7 +285,10 @@ function FormularioPage() {
             </div>
 
             <div className="space-y-3">
-              <Label>Días de entrenamiento por semana</Label>
+              <Label>Días que vas al gym por semana</Label>
+              <p className="text-xs text-muted-foreground">
+                Generaremos una rutina de exactamente esa cantidad de días: Día 1, Día 2, etc.
+              </p>
               <div className="grid grid-cols-7 gap-2">
                 {[1,2,3,4,5,6,7].map((d) => (
                   <button
@@ -275,9 +305,6 @@ function FormularioPage() {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Generaremos automáticamente una rutina dividida según los días que elijas.
-              </p>
             </div>
           </>
         )}
@@ -285,8 +312,8 @@ function FormularioPage() {
         {step === 4 && (
           <>
             <SectionTitle
-              title="Salud y restricciones"
-              subtitle={gender === "female" ? "Datos importantes para mujeres." : "Información médica relevante."}
+              title="Salud, restricciones y gustos"
+              subtitle="Esto se respeta tanto en la dieta como en la rutina."
             />
 
             {gender === "female" && (
@@ -333,6 +360,12 @@ function FormularioPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="dl">Alimentos que NO te gustan (separados por coma)</Label>
+              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígado…" />
+              <p className="text-xs text-muted-foreground">La IA evitará estos alimentos al armar tu menú.</p>
+            </div>
+
+            <div className="space-y-2">
               <Label>Preferencia dietética</Label>
               <Select value={dietaryPref} onValueChange={setDietaryPref}>
                 <SelectTrigger><SelectValue placeholder="Sin preferencia" /></SelectTrigger>
@@ -344,6 +377,18 @@ function FormularioPage() {
                   <SelectItem value="keto">Keto</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lim">Limitaciones físicas, lesiones o dolores</Label>
+              <Textarea
+                id="lim"
+                value={limitations}
+                onChange={(e) => setLimitations(e.target.value)}
+                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con menisco…"
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground">Evitaremos ejercicios que agraven estas zonas.</p>
             </div>
 
             <div className="space-y-2">
@@ -359,14 +404,16 @@ function FormularioPage() {
             <ReviewRow label="Género" value={gender === "male" ? "Hombre" : gender === "female" ? "Mujer" : "Otro"} />
             <ReviewRow label="Edad" value={`${calcAge(dob)} años`} />
             <ReviewRow label="Altura / Peso" value={`${heightCm} cm · ${weightKg} kg`} />
+            <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "—"} />
             <ReviewRow label="Objetivo" value={goal} />
-            <ReviewRow label="Días/semana" value={`${trainingDays} días`} />
+            <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
             {gender === "female" && isPregnant && (
               <ReviewRow label="Embarazo" value={`${pregnancyWeeks} semanas`} />
             )}
+            {limitations && <ReviewRow label="Limitaciones" value={limitations} />}
             <div className="rounded-lg border border-success/40 bg-success/5 p-4 text-sm">
               <CheckCircle2 className="mb-2 h-5 w-5 text-success" />
-              Al guardar, calcularemos BMR, TDEE, calorías objetivo y macros (proteína / carbohidratos / grasas).
+              Al guardar calcularemos calorías y macros. Luego podrás generar tu rutina y tu menú diario con IA.
             </div>
           </>
         )}

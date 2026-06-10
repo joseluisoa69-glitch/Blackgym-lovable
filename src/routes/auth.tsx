@@ -14,7 +14,7 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Iniciar sesión — FitForge" },
+      { title: "Iniciar sesión — BlackGYM" },
       { name: "description", content: "Accede a tu plan de rutina y nutrición personalizado." },
     ],
   }),
@@ -88,9 +88,9 @@ function AuthPage() {
             <Dumbbell className="h-6 w-6" strokeWidth={2.5} />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold tracking-tight">FITFORGE</h1>
+            <h1 className="text-2xl font-display font-bold tracking-tight">BLACKGYM</h1>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              Train. Eat. Repeat.
+              Entrena. Come. Repite.
             </p>
           </div>
         </div>
