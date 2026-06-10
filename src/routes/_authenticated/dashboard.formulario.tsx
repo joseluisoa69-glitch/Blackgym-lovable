@@ -100,7 +100,7 @@ function FormularioPage() {
       setDietaryPref(existing.n.dietary_pref ?? "");
       setMedical(existing.n.medical_conditions ?? "");
       setLimitations((existing.n as any).physical_limitations ?? "");
-    }
+      setDietBudget(((existing.n as any).diet_budget as any) ?? "medium");
   }, [existing]);
 
   const canNext = (() => {
