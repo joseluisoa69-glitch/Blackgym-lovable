@@ -59,7 +59,7 @@ function AlimentacionPage() {
           allergies: (n.allergies ?? []) as string[],
           disliked_foods: ((n as any).disliked_foods ?? []) as string[],
           medical_conditions: n.medical_conditions ?? undefined,
-          meals_count: 4,
+          meals_count: Number((n as any).meals_per_day ?? 4),
         },
       });
 

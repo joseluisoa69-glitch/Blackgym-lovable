@@ -56,6 +56,7 @@ function FormularioPage() {
   const [medical, setMedical] = useState("");
   const [limitations, setLimitations] = useState("");
   const [dietBudget, setDietBudget] = useState<"economic" | "medium" | "generous" | "">("medium");
+  const [mealsPerDay, setMealsPerDay] = useState<string>("4");
 
   const { data: existing } = useQuery({
     queryKey: ["formulario_hydrate"],
@@ -101,6 +102,7 @@ function FormularioPage() {
       setMedical(existing.n.medical_conditions ?? "");
       setLimitations((existing.n as any).physical_limitations ?? "");
       setDietBudget(((existing.n as any).diet_budget as any) ?? "medium");
+      setMealsPerDay(((existing.n as any).meals_per_day ?? 4).toString());
     }
   }, [existing]);
 
@@ -166,6 +168,7 @@ function FormularioPage() {
       medical_conditions: medical || null,
       physical_limitations: limitations || null,
       diet_budget: dietBudget || "medium",
+      meals_per_day: parseInt(mealsPerDay) || 4,
       ...macros,
       completed_at: new Date().toISOString(),
     });
@@ -287,27 +290,37 @@ function FormularioPage() {
               </Select>
             </div>
 
-            <div className="space-y-3">
-              <Label>Días que vas al gym por semana</Label>
+            <div className="space-y-2">
+              <Label>Frecuencia con la que deseas entrenar</Label>
+              <Select value={trainingDays} onValueChange={setTrainingDays}>
+                <SelectTrigger><SelectValue placeholder="Selecciona días por semana…" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 día por semana — Full body</SelectItem>
+                  <SelectItem value="2">2 días por semana — Torso / Piernas</SelectItem>
+                  <SelectItem value="3">3 días por semana — Push / Pull / Piernas</SelectItem>
+                  <SelectItem value="4">4 días por semana — Upper / Lower x2</SelectItem>
+                  <SelectItem value="5">5 días por semana — PPL + Upper / Lower</SelectItem>
+                  <SelectItem value="6">6 días por semana — PPL x2</SelectItem>
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
-                Generaremos una rutina de exactamente esa cantidad de días: Día 1, Día 2, etc.
+                Recomendaremos la rutina más adecuada para esa frecuencia.
               </p>
-              <div className="grid grid-cols-7 gap-2">
-                {[1,2,3,4,5,6,7].map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setTrainingDays(d.toString())}
-                    className={`rounded-lg border py-3 font-display text-lg font-bold transition ${
-                      trainingDays === d.toString()
-                        ? "border-primary bg-primary text-primary-foreground shadow-glow"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    {d}
-                  </button>
-                ))}
-              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Comidas al día</Label>
+              <Select value={mealsPerDay} onValueChange={setMealsPerDay}>
+                <SelectTrigger><SelectValue placeholder="¿Cuántas comidas haces al día?" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">3 comidas (desayuno · comida · cena)</SelectItem>
+                  <SelectItem value="4">4 comidas (+ una colación)</SelectItem>
+                  <SelectItem value="5">5 comidas (2 colaciones)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                La IA repartirá tus macros entre esa cantidad exacta de comidas.
+              </p>
             </div>
           </>
         )}
@@ -439,6 +452,7 @@ function FormularioPage() {
             <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "—"} />
             <ReviewRow label="Objetivo" value={goal} />
             <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
+            <ReviewRow label="Comidas al día" value={`${mealsPerDay} comidas`} />
             {gender === "female" && isPregnant && (
               <ReviewRow label="Embarazo" value={`${pregnancyWeeks} semanas`} />
             )}

@@ -289,3 +289,74 @@ Calcula bien los subtotales y totales. No agregues texto fuera del JSON.
       },
     };
   });
+
+/* ============================================================
+ * Generación de PLAN DE PROGRESIÓN por ejercicio
+ * ============================================================ */
+
+const ProgressionInput = z.object({
+  exercise_name: z.string().min(1),
+  muscle_group: z.string().optional(),
+  goal: z.string().default("hypertrophy"),
+  level: z.string().default("intermediate"),
+  history: z
+    .array(
+      z.object({
+        date: z.string(),
+        sets: z.array(
+          z.object({
+            weight: z.number().nullable(),
+            reps: z.number().nullable(),
+          }),
+        ),
+      }),
+    )
+    .max(20),
+});
+
+export const generateProgressionAI = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ProgressionInput.parse(input))
+  .handler(async ({ data }) => {
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error("DEEPSEEK_API_KEY no configurada");
+
+    const system = [
+      "Eres un coach de fuerza. Analizas el histórico de un ejercicio y propones la próxima progresión.",
+      "Aplicas sobrecarga progresiva: si las últimas 2 sesiones cumplieron el rango superior de reps, sube peso 2.5-5%. Si reps bajaron, mantén peso y enfócate en técnica.",
+      "Devuelves SIEMPRE JSON válido en español, sin texto fuera del JSON.",
+    ].join(" ");
+
+    const user = `
+Ejercicio: ${data.exercise_name} (${data.muscle_group ?? "—"}).
+Objetivo: ${data.goal}. Nivel: ${data.level}.
+Historial (más reciente al final): ${JSON.stringify(data.history)}
+
+Devuelve JSON con esta forma exacta:
+{
+  "diagnosis": "<1-2 frases sobre la tendencia: estancado, progresando, etc.>",
+  "next_session": {
+    "weight": <numero kg>,
+    "sets": <numero>,
+    "rep_range": "<ej. 6-8>",
+    "rest_seconds": <numero>
+  },
+  "weekly_plan": [
+    { "week": 1, "focus": "<descripción corta>", "weight": <kg>, "rep_range": "<ej. 6-8>" },
+    { "week": 2, "focus": "<...>", "weight": <kg>, "rep_range": "<...>" },
+    { "week": 3, "focus": "<...>", "weight": <kg>, "rep_range": "<...>" },
+    { "week": 4, "focus": "<deload o test>", "weight": <kg>, "rep_range": "<...>" }
+  ],
+  "tips": ["<tip 1>", "<tip 2>", "<tip 3>"]
+}
+`.trim();
+
+    const content = await deepseekChat({
+      apiKey,
+      system,
+      user,
+      json: true,
+      temperature: 0.4,
+    });
+    return extractJson(content);
+  });
