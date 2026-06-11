@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Settings, Dumbbell, Apple, ClipboardList, LayoutDashboard, LogOut } from "lucide-react";
+import { Settings, Dumbbell, Apple, ClipboardList, LayoutDashboard, LogOut, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ const navItems: Array<{ to: string; label: string; icon: typeof LayoutDashboard;
   { to: "/dashboard", label: "Inicio", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/rutina", label: "Rutina", icon: Dumbbell },
   { to: "/dashboard/alimentacion", label: "Alimentación", icon: Apple },
+  { to: "/dashboard/progreso", label: "Progreso", icon: TrendingUp },
   { to: "/dashboard/formulario", label: "Formulario", icon: ClipboardList },
 ];
 
