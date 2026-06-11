@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRutinaRouteImport } from './routes/_auth
 import { Route as AuthenticatedDashboardProgresoRouteImport } from './routes/_authenticated/dashboard.progreso'
 import { Route as AuthenticatedDashboardPerfilRouteImport } from './routes/_authenticated/dashboard.perfil'
 import { Route as AuthenticatedDashboardFormularioRouteImport } from './routes/_authenticated/dashboard.formulario'
+import { Route as AuthenticatedDashboardCamaraRouteImport } from './routes/_authenticated/dashboard.camara'
 import { Route as AuthenticatedDashboardAlimentacionRouteImport } from './routes/_authenticated/dashboard.alimentacion'
 
 const AuthRoute = AuthRouteImport.update({
@@ -69,6 +70,12 @@ const AuthenticatedDashboardFormularioRoute =
     path: '/formulario',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardCamaraRoute =
+  AuthenticatedDashboardCamaraRouteImport.update({
+    id: '/camara',
+    path: '/camara',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardAlimentacionRoute =
   AuthenticatedDashboardAlimentacionRouteImport.update({
     id: '/alimentacion',
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard/alimentacion': typeof AuthenticatedDashboardAlimentacionRoute
+  '/dashboard/camara': typeof AuthenticatedDashboardCamaraRoute
   '/dashboard/formulario': typeof AuthenticatedDashboardFormularioRoute
   '/dashboard/perfil': typeof AuthenticatedDashboardPerfilRoute
   '/dashboard/progreso': typeof AuthenticatedDashboardProgresoRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard/alimentacion': typeof AuthenticatedDashboardAlimentacionRoute
+  '/dashboard/camara': typeof AuthenticatedDashboardCamaraRoute
   '/dashboard/formulario': typeof AuthenticatedDashboardFormularioRoute
   '/dashboard/perfil': typeof AuthenticatedDashboardPerfilRoute
   '/dashboard/progreso': typeof AuthenticatedDashboardProgresoRoute
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/dashboard/alimentacion': typeof AuthenticatedDashboardAlimentacionRoute
+  '/_authenticated/dashboard/camara': typeof AuthenticatedDashboardCamaraRoute
   '/_authenticated/dashboard/formulario': typeof AuthenticatedDashboardFormularioRoute
   '/_authenticated/dashboard/perfil': typeof AuthenticatedDashboardPerfilRoute
   '/_authenticated/dashboard/progreso': typeof AuthenticatedDashboardProgresoRoute
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/dashboard/alimentacion'
+    | '/dashboard/camara'
     | '/dashboard/formulario'
     | '/dashboard/perfil'
     | '/dashboard/progreso'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard/alimentacion'
+    | '/dashboard/camara'
     | '/dashboard/formulario'
     | '/dashboard/perfil'
     | '/dashboard/progreso'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard/alimentacion'
+    | '/_authenticated/dashboard/camara'
     | '/_authenticated/dashboard/formulario'
     | '/_authenticated/dashboard/perfil'
     | '/_authenticated/dashboard/progreso'
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardFormularioRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/camara': {
+      id: '/_authenticated/dashboard/camara'
+      path: '/camara'
+      fullPath: '/dashboard/camara'
+      preLoaderRoute: typeof AuthenticatedDashboardCamaraRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/alimentacion': {
       id: '/_authenticated/dashboard/alimentacion'
       path: '/alimentacion'
@@ -229,6 +249,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardAlimentacionRoute: typeof AuthenticatedDashboardAlimentacionRoute
+  AuthenticatedDashboardCamaraRoute: typeof AuthenticatedDashboardCamaraRoute
   AuthenticatedDashboardFormularioRoute: typeof AuthenticatedDashboardFormularioRoute
   AuthenticatedDashboardPerfilRoute: typeof AuthenticatedDashboardPerfilRoute
   AuthenticatedDashboardProgresoRoute: typeof AuthenticatedDashboardProgresoRoute
@@ -240,6 +261,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardAlimentacionRoute:
       AuthenticatedDashboardAlimentacionRoute,
+    AuthenticatedDashboardCamaraRoute: AuthenticatedDashboardCamaraRoute,
     AuthenticatedDashboardFormularioRoute:
       AuthenticatedDashboardFormularioRoute,
     AuthenticatedDashboardPerfilRoute: AuthenticatedDashboardPerfilRoute,
@@ -272,3 +294,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
