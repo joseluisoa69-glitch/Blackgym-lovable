@@ -150,6 +150,7 @@ export type Database = {
           height_cm: number | null
           is_breastfeeding: boolean | null
           is_pregnant: boolean | null
+          meals_per_day: number
           medical_conditions: string | null
           physical_limitations: string | null
           pregnancy_weeks: number | null
@@ -178,6 +179,7 @@ export type Database = {
           height_cm?: number | null
           is_breastfeeding?: boolean | null
           is_pregnant?: boolean | null
+          meals_per_day?: number
           medical_conditions?: string | null
           physical_limitations?: string | null
           pregnancy_weeks?: number | null
@@ -206,6 +208,7 @@ export type Database = {
           height_cm?: number | null
           is_breastfeeding?: boolean | null
           is_pregnant?: boolean | null
+          meals_per_day?: number
           medical_conditions?: string | null
           physical_limitations?: string | null
           pregnancy_weeks?: number | null

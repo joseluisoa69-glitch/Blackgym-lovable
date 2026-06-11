@@ -1,0 +1,1 @@
+ALTER TABLE public.nutrition_profile ADD COLUMN IF NOT EXISTS meals_per_day integer NOT NULL DEFAULT 4;
