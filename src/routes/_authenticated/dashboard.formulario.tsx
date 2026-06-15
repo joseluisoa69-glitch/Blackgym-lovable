@@ -171,6 +171,7 @@ function FormularioPage() {
       physical_limitations: limitations || null,
       diet_budget: dietBudget || "medium",
       meals_per_day: parseInt(mealsPerDay) || 4,
+      equipment_pref: equipmentPref,
       ...macros,
       completed_at: new Date().toISOString(),
     });
