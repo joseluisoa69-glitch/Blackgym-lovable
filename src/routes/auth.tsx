@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Dumbbell, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import logoAsset from "@/assets/blackgym-logo.jpg.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -79,16 +80,29 @@ function AuthPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-grid opacity-60" />
+      {/* Big transparent logo background */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
+        <img
+          src={logoAsset.url}
+          alt=""
+          className="w-[140%] max-w-none opacity-[0.07] mix-blend-screen select-none sm:w-[110%] md:w-[90%]"
+        />
+      </div>
+      <div className="absolute inset-0 bg-grid opacity-40" />
       <div className="absolute inset-x-0 top-0 h-[480px] bg-gradient-to-b from-primary/20 via-transparent to-transparent blur-2xl" />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-            <Dumbbell className="h-6 w-6" strokeWidth={2.5} />
-          </div>
+        <div className="mb-8 flex flex-col items-center gap-3 text-center">
+          <img
+            src={logoAsset.url}
+            alt="BlackGYM"
+            className="h-20 w-20 rounded-2xl object-cover shadow-glow"
+          />
           <div>
-            <h1 className="text-2xl font-display font-bold tracking-tight">BLACKGYM</h1>
+            <h1 className="text-3xl font-display font-bold tracking-tight">BLACKGYM</h1>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
               Entrena. Come. Repite.
             </p>

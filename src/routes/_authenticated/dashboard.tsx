@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import logoAsset from "@/assets/blackgym-logo.jpg.asset.json";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
@@ -45,9 +46,11 @@ function DashboardLayout() {
               <Settings className="h-5 w-5 transition group-hover:rotate-45" />
             </Link>
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Dumbbell className="h-5 w-5" strokeWidth={2.5} />
-              </div>
+              <img
+                src={logoAsset.url}
+                alt="BlackGYM"
+                className="h-9 w-9 rounded-lg object-cover"
+              />
               <span className="font-display text-lg font-bold tracking-tight">BLACKGYM</span>
             </div>
           </div>
