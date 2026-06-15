@@ -486,6 +486,7 @@ function FormularioPage() {
             <ReviewRow label="Objetivo" value={goal} />
             <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
             <ReviewRow label="Comidas al día" value={`${mealsPerDay} comidas`} />
+            <ReviewRow label="Equipo preferido" value={equipmentPref === "free" ? "Pesos libres" : equipmentPref === "machines" ? "Máquinas y poleas" : "Ambos"} />
             {gender === "female" && isPregnant && (
               <ReviewRow label="Embarazo" value={`${pregnancyWeeks} semanas`} />
             )}
