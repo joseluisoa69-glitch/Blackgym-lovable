@@ -325,8 +325,38 @@ function FormularioPage() {
                 La IA repartirá tus macros entre esa cantidad exacta de comidas.
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label>Tipo de equipo que prefieres usar</Label>
+              <p className="text-xs text-muted-foreground">
+                Filtraremos los ejercicios de tu rutina según el equipo disponible o tu preferencia.
+              </p>
+              <RadioGroup
+                value={equipmentPref}
+                onValueChange={(v) => setEquipmentPref(v as any)}
+                className="grid gap-2"
+              >
+                {([
+                  ["free", "Pesos libres", "Barras, mancuernas, peso corporal. Más activación de estabilizadores."],
+                  ["machines", "Máquinas y poleas", "Peso integrado y guiado. Más seguro y aislado por grupo muscular."],
+                  ["both", "Ambos (recomendado)", "Combinación óptima: compuestos libres + aislamiento en máquinas."],
+                ] as const).map(([v, label, desc]) => (
+                  <Label
+                    key={v}
+                    className={`cursor-pointer rounded-lg border p-3 transition ${
+                      equipmentPref === v ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem value={v} className="sr-only" />
+                    <div className="font-display text-base font-bold">{label}</div>
+                    <div className="mt-0.5 text-xs text-muted-foreground">{desc}</div>
+                  </Label>
+                ))}
+              </RadioGroup>
+            </div>
           </>
         )}
+
 
         {step === 4 && (
           <>
