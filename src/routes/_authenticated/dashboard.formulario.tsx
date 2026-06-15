@@ -104,6 +104,7 @@ function FormularioPage() {
       setLimitations((existing.n as any).physical_limitations ?? "");
       setDietBudget(((existing.n as any).diet_budget as any) ?? "medium");
       setMealsPerDay(((existing.n as any).meals_per_day ?? 4).toString());
+      setEquipmentPref(((existing.n as any).equipment_pref ?? "both") as any);
     }
   }, [existing]);
 
