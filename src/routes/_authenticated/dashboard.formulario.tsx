@@ -57,6 +57,7 @@ function FormularioPage() {
   const [limitations, setLimitations] = useState("");
   const [dietBudget, setDietBudget] = useState<"economic" | "medium" | "generous" | "">("medium");
   const [mealsPerDay, setMealsPerDay] = useState<string>("4");
+  const [equipmentPref, setEquipmentPref] = useState<"free" | "machines" | "both">("both");
 
   const { data: existing } = useQuery({
     queryKey: ["formulario_hydrate"],
