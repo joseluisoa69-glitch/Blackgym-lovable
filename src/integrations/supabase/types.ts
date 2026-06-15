@@ -144,6 +144,7 @@ export type Database = {
           diet_budget: string | null
           dietary_pref: string | null
           disliked_foods: string[] | null
+          equipment_pref: string
           experience: string | null
           fats_g: number | null
           goal: string | null
@@ -173,6 +174,7 @@ export type Database = {
           diet_budget?: string | null
           dietary_pref?: string | null
           disliked_foods?: string[] | null
+          equipment_pref?: string
           experience?: string | null
           fats_g?: number | null
           goal?: string | null
@@ -202,6 +204,7 @@ export type Database = {
           diet_budget?: string | null
           dietary_pref?: string | null
           disliked_foods?: string[] | null
+          equipment_pref?: string
           experience?: string | null
           fats_g?: number | null
           goal?: string | null
