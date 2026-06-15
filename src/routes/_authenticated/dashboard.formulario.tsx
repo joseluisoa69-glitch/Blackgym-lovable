@@ -57,6 +57,7 @@ function FormularioPage() {
   const [limitations, setLimitations] = useState("");
   const [dietBudget, setDietBudget] = useState<"economic" | "medium" | "generous" | "">("medium");
   const [mealsPerDay, setMealsPerDay] = useState<string>("4");
+  const [equipmentPref, setEquipmentPref] = useState<"free" | "machines" | "both">("both");
 
   const { data: existing } = useQuery({
     queryKey: ["formulario_hydrate"],
@@ -103,6 +104,7 @@ function FormularioPage() {
       setLimitations((existing.n as any).physical_limitations ?? "");
       setDietBudget(((existing.n as any).diet_budget as any) ?? "medium");
       setMealsPerDay(((existing.n as any).meals_per_day ?? 4).toString());
+      setEquipmentPref(((existing.n as any).equipment_pref ?? "both") as any);
     }
   }, [existing]);
 
@@ -169,6 +171,7 @@ function FormularioPage() {
       physical_limitations: limitations || null,
       diet_budget: dietBudget || "medium",
       meals_per_day: parseInt(mealsPerDay) || 4,
+      equipment_pref: equipmentPref,
       ...macros,
       completed_at: new Date().toISOString(),
     });
@@ -322,8 +325,38 @@ function FormularioPage() {
                 La IA repartirá tus macros entre esa cantidad exacta de comidas.
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label>Tipo de equipo que prefieres usar</Label>
+              <p className="text-xs text-muted-foreground">
+                Filtraremos los ejercicios de tu rutina según el equipo disponible o tu preferencia.
+              </p>
+              <RadioGroup
+                value={equipmentPref}
+                onValueChange={(v) => setEquipmentPref(v as any)}
+                className="grid gap-2"
+              >
+                {([
+                  ["free", "Pesos libres", "Barras, mancuernas, peso corporal. Más activación de estabilizadores."],
+                  ["machines", "Máquinas y poleas", "Peso integrado y guiado. Más seguro y aislado por grupo muscular."],
+                  ["both", "Ambos (recomendado)", "Combinación óptima: compuestos libres + aislamiento en máquinas."],
+                ] as const).map(([v, label, desc]) => (
+                  <Label
+                    key={v}
+                    className={`cursor-pointer rounded-lg border p-3 transition ${
+                      equipmentPref === v ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem value={v} className="sr-only" />
+                    <div className="font-display text-base font-bold">{label}</div>
+                    <div className="mt-0.5 text-xs text-muted-foreground">{desc}</div>
+                  </Label>
+                ))}
+              </RadioGroup>
+            </div>
           </>
         )}
+
 
         {step === 4 && (
           <>
@@ -453,6 +486,7 @@ function FormularioPage() {
             <ReviewRow label="Objetivo" value={goal} />
             <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
             <ReviewRow label="Comidas al día" value={`${mealsPerDay} comidas`} />
+            <ReviewRow label="Equipo preferido" value={equipmentPref === "free" ? "Pesos libres" : equipmentPref === "machines" ? "Máquinas y poleas" : "Ambos"} />
             {gender === "female" && isPregnant && (
               <ReviewRow label="Embarazo" value={`${pregnancyWeeks} semanas`} />
             )}

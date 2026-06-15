@@ -241,6 +241,7 @@ export type LibraryExercise = {
   name: string;
   muscle_group: string;
   is_compound: boolean | null;
+  equipment?: string | null;
 };
 
 export type ExerciseInstance = {
@@ -250,6 +251,17 @@ export type ExerciseInstance = {
   reps: string;
   rest_seconds: number;
 };
+
+export type EquipmentPref = "free" | "machines" | "both";
+
+const FREE_EQUIP = new Set(["Barra", "Barra Z", "Mancuernas", "Mancuerna", "Peso corporal", "Rueda", "Cuerda"]);
+const MACHINE_EQUIP = new Set(["Máquina", "Polea", "Peso corporal", "Cuerda"]);
+
+export function filterByEquipment(library: LibraryExercise[], pref: EquipmentPref): LibraryExercise[] {
+  if (pref === "both") return library;
+  const allowed = pref === "free" ? FREE_EQUIP : MACHINE_EQUIP;
+  return library.filter((e) => !e.equipment || allowed.has(e.equipment));
+}
 
 /**
  * Recibe la biblioteca de ejercicios + el plan de un día y devuelve los ejercicios concretos.
@@ -265,7 +277,6 @@ export function pickExercisesForDay(
     const candidates = library
       .filter((e) => e.muscle_group === slot.muscle && !usedNames.has(e.name))
       .sort((a, b) => Number(b.is_compound) - Number(a.is_compound));
-    // mezcla ligera para que no salga exactamente el mismo orden siempre
     const pool = [...candidates];
     const chosen: LibraryExercise[] = [];
     for (let i = 0; i < slot.count && pool.length > 0; i++) {
@@ -289,13 +300,16 @@ export function pickExercisesForDay(
 export function buildRoutine(
   library: LibraryExercise[],
   daysPerWeek: number,
+  equipmentPref: EquipmentPref = "both",
 ): { day_index: number; title: string; muscle_groups: string[]; exercises: ExerciseInstance[] }[] {
   const plan = SPLITS[Math.min(6, Math.max(1, daysPerWeek))] ?? SPLITS[3];
+  const filtered = filterByEquipment(library, equipmentPref);
   const used = new Set<string>();
   return plan.map((day) => ({
     day_index: day.day_index,
     title: day.title,
     muscle_groups: day.muscle_groups,
-    exercises: pickExercisesForDay(library, day, used),
+    exercises: pickExercisesForDay(filtered, day, used),
   }));
 }
+

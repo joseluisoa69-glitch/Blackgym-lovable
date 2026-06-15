@@ -98,7 +98,8 @@ function RutinaPage() {
     setBusy(true);
     try {
       const days = nutrition.training_days_per_week;
-      const built = buildRoutine(library, days);
+      const equipPref = ((nutrition as any).equipment_pref ?? "both") as "free" | "machines" | "both";
+      const built = buildRoutine(library, days, equipPref);
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
       await supabase
