@@ -89,8 +89,8 @@ function AuthPage() {
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
-            <span className="font-display text-3xl font-bold">BG</span>
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-glow overflow-hidden">
+            <img src="/icon-192.png" alt="BlackGYM" className="h-16 w-16 object-contain" />
           </div>
           <div>
             <h1 className="text-3xl font-display font-bold tracking-tight">BLACKGYM</h1>
