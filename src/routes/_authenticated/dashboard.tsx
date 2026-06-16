@@ -1,10 +1,10 @@
-import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+﻿import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Settings, Dumbbell, Apple, ClipboardList, LayoutDashboard, LogOut, TrendingUp, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import logoAsset from "@/assets/blackgym-logo.jpg.asset.json";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
@@ -13,9 +13,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 const navItems: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/dashboard", label: "Inicio", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/rutina", label: "Rutina", icon: Dumbbell },
-  { to: "/dashboard/alimentacion", label: "Alimentación", icon: Apple },
+  { to: "/dashboard/alimentacion", label: "AlimentaciÃ³n", icon: Apple },
   { to: "/dashboard/progreso", label: "Progreso", icon: TrendingUp },
-  { to: "/dashboard/camara", label: "Cámara", icon: Camera },
+  { to: "/dashboard/camara", label: "CÃ¡mara", icon: Camera },
   { to: "/dashboard/formulario", label: "Formulario", icon: ClipboardList },
 ];
 
@@ -28,7 +28,7 @@ function DashboardLayout() {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    toast.success("Sesión cerrada");
+    toast.success("SesiÃ³n cerrada");
     navigate({ to: "/auth", replace: true });
   }
 
@@ -47,7 +47,7 @@ function DashboardLayout() {
             </Link>
             <div className="flex items-center gap-2">
               <img
-                src={logoAsset.url}
+                src="/icon-192.png"
                 alt="BlackGYM"
                 className="h-9 w-9 rounded-lg object-cover"
               />
@@ -97,3 +97,4 @@ function DashboardLayout() {
     </div>
   );
 }
+

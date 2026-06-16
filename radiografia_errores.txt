@@ -1,0 +1,233 @@
+================ ESCANEO DE MUTACIONES (SUPABASE) ================
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.alimentacion.tsx
+
+      queryKey: ["nutrition_profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("nutrition_profile").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const { data: mealPlan } = useQuery({
+      queryKey: ["active_meal_plan"],
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData.user) return;
+>       await supabase.from("meal_plans").update({ is_active: false }).eq("user_id", userData.user.id);
+>       await supabase.from("meal_plans").insert({
+          user_id: userData.user.id,
+          name: "Menú diario",
+          total_calories: result.totals.kcal,
+          protein_g: result.totals.protein_g,
+          carbs_g: result.totals.carbs_g,
+          fats_g: result.totals.fats_g,
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.camara.tsx
+
+                setAngle(Math.round(a));
+                if (counterRef.current) {
+>                 const { reps: r } = counterRef.current.update(a);
+                  setReps(r);
+                }
+                if (recorderRef.current?.state === "recording") {
+                  framesRef.current.push({
+                    t: ts - sessionStartRef.current,
+                    landmarks: lm.map((p) => ({
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.formulario.tsx
+
+      queryFn: async () => {
+        const [{ data: p }, { data: n }] = await Promise.all([
+>         supabase.from("profiles").select("*").maybeSingle(),
+>         supabase.from("nutrition_profile").select("*").maybeSingle(),
+        ]);
+        return { p, n };
+      },
+    });
+  
+    useEffect(() => {
+      });
+  
+>     const { error: pErr } = await supabase.from("profiles").upsert({
+        id: userData.user.id,
+        gender: gender as "male" | "female" | "other",
+        date_of_birth: dob,
+      });
+  
+      const allergies = allergiesText.split(",").map((s) => s.trim()).filter(Boolean);
+      const disliked = dislikedText.split(",").map((s) => s.trim()).filter(Boolean);
+  
+>     const { error: nErr } = await supabase.from("nutrition_profile").upsert({
+        user_id: userData.user.id,
+        height_cm: h,
+        weight_kg: w,
+        target_weight_kg: targetWeight ? parseFloat(targetWeight) : null,
+        activity_level: activity as Activity,
+        goal: goal as Goal,
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.index.tsx
+
+      queryKey: ["nutrition_profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("nutrition_profile").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const { data: profile } = useQuery({
+      queryKey: ["profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("profiles").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const { data: routine } = useQuery({
+      queryKey: ["active_routine"],
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.perfil.tsx
+
+      queryKey: ["profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("profiles").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const [saving, setSaving] = useState(false);
+    const [name, setName] = useState("");
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+>     const { error } = await supabase.from("profiles").upsert({
+        id: userData.user.id,
+        display_name: name || null,
+        date_of_birth: dob || null,
+        gender: (gender || null) as "male" | "female" | "other" | null,
+        units: units as "metric" | "imperial",
+      });
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.progreso.tsx
+
+      queryKey: ["nutrition_profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("nutrition_profile").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const { data: logs, isLoading } = useQuery({
+      queryKey: ["all_exercise_logs"],
+
+
+
+
+[ARCHIVO]: .\src\routes\_authenticated\dashboard.rutina.tsx
+
+      queryKey: ["nutrition_profile"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("nutrition_profile").select("*").maybeSingle();
+        return data;
+      },
+    });
+  
+    const { data: library } = useQuery({
+      queryKey: ["exercise_library"],
+      queryFn: async () => {
+>       const { data } = await supabase.from("exercise_library").select("*");
+        return (data ?? []) as LibraryExercise[];
+      },
+    });
+  
+    const { data: routine, isLoading } = useQuery({
+      queryKey: ["active_routine"],
+        await supabase
+          .from("routines")
+>         .update({ is_active: false })
+          .eq("user_id", userData.user.id);
+        const { data: newR, error } = await supabase
+          .from("routines")
+>         .insert({
+            user_id: userData.user.id,
+            name: `Rutina de ${days} días`,
+            days_per_week: days,
+            level: nutrition.experience ?? "beginner",
+            goal: nutrition.goal ?? "maintain",
+            is_active: true,
+          .single();
+        if (error || !newR) throw error;
+>       await supabase.from("routine_days").insert(
+          built.map((d) => ({
+            routine_id: newR.id,
+            day_index: d.day_index,
+            title: d.title,
+            muscle_groups: d.muscle_groups,
+            exercises: d.exercises,
+          const { data: created } = await supabase
+            .from("workout_sessions")
+>           .insert({
+              user_id: userData.user.id,
+              routine_id: routineId,
+              day_index: day.day_index,
+              day_title: day.title,
+              session_date: today,
+            })
+        await supabase
+          .from("exercise_logs")
+>         .update({ sets: rows as any, muscle_group: muscle, position })
+          .eq("id", existing.id);
+      } else {
+>       await supabase.from("exercise_logs").insert({
+          user_id: userData.user.id,
+          session_id: sessionId,
+          exercise_name: exName,
+          muscle_group: muscle,
+          position,
+          sets: rows as any,
+        await supabase
+          .from("workout_sessions")
+>         .update({ completed: true, completed_at: new Date().toISOString() })
+          .eq("id", sessionId);
+  
+        // actualizar racha semanal
+        const monday = getMondayStr();
+        const { data: streak } = await supabase
+          .from("weekly_streaks")
+          await supabase
+            .from("weekly_streaks")
+>           .update({ completed_days: newCompleted, achieved })
+            .eq("id", streak.id);
+        } else {
+>         await supabase.from("weekly_streaks").insert({
+            user_id: userData.user.id,
+            week_start: monday,
+            target_days: targetDays,
+            completed_days: newCompleted,
+            achieved,
+          });
+        supabase
+          .from("routine_days")
+>         .update({ exercises: arr as any })
+          .eq("id", day.id);
+        return arr;
+      });
+      setSwapping(null);
+    }
+  
+
+
+

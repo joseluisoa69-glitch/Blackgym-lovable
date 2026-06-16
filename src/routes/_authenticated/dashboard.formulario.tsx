@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -121,70 +121,104 @@ function FormularioPage() {
     }
   })();
 
-  async function handleSubmit() {
+    async function handleSubmit() {
     setSaving(true);
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) return;
+    try {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData.user) {
+        toast.error("No hay sesion activa");
+        return;
+      }
 
-    const w = parseFloat(weightKg);
-    const h = parseFloat(heightCm);
-    const age = calcAge(dob);
+      const w = parseFloat(weightKg);
+      const h = parseFloat(heightCm);
+      const age = calcAge(dob);
 
-    const macros = calcMacros({
-      weightKg: w,
-      heightCm: h,
-      age,
-      gender: gender as Gender,
-      activity: activity as Activity,
-      trainingDaysPerWeek: parseInt(trainingDays),
-      goal: goal as Goal,
-      isPregnant: gender === "female" ? isPregnant : false,
-      pregnancyWeeks: pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
-      isBreastfeeding: gender === "female" ? isBreastfeeding : false,
-    });
+      const macros = calcMacros({
+        weightKg: w,
+        heightCm: h,
+        age,
+        gender: gender as Gender,
+        activity: activity as Activity,
+        trainingDaysPerWeek: parseInt(trainingDays),
+        goal: goal as Goal,
+        isPregnant: gender === "female" ? isPregnant : false,
+        pregnancyWeeks: pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
+        isBreastfeeding: gender === "female" ? isBreastfeeding : false,
+      });
 
-    const { error: pErr } = await supabase.from("profiles").upsert({
-      id: userData.user.id,
-      gender: gender as "male" | "female" | "other",
-      date_of_birth: dob,
-    });
+      const profilePayload = {
+        id: userData.user.id,
+        gender: gender as "male" | "female" | "other",
+        date_of_birth: dob,
+      };
 
-    const allergies = allergiesText.split(",").map((s) => s.trim()).filter(Boolean);
-    const disliked = dislikedText.split(",").map((s) => s.trim()).filter(Boolean);
+      console.log("Profile payload:", profilePayload);
+      const { error: pErr } = await supabase.from("profiles").upsert(profilePayload);
+      if (pErr) {
+        console.error("Profile error:", pErr);
+        toast.error("Error guardando perfil: " + pErr.message);
+        return;
+      }
 
-    const { error: nErr } = await supabase.from("nutrition_profile").upsert({
-      user_id: userData.user.id,
-      height_cm: h,
-      weight_kg: w,
-      target_weight_kg: targetWeight ? parseFloat(targetWeight) : null,
-      activity_level: activity as Activity,
-      goal: goal as Goal,
-      experience: experience || null,
-      training_days_per_week: parseInt(trainingDays),
-      is_pregnant: gender === "female" ? isPregnant : false,
-      pregnancy_weeks: gender === "female" && isPregnant && pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
-      is_breastfeeding: gender === "female" ? isBreastfeeding : false,
-      allergies,
-      disliked_foods: disliked,
-      dietary_pref: dietaryPref || null,
-      medical_conditions: medical || null,
-      physical_limitations: limitations || null,
-      diet_budget: dietBudget || "medium",
-      meals_per_day: parseInt(mealsPerDay) || 4,
-      equipment_pref: equipmentPref,
-      ...macros,
-      completed_at: new Date().toISOString(),
-    });
+      const allergies = allergiesText.split(",").map((s) => s.trim()).filter(Boolean);
+      const disliked = dislikedText.split(",").map((s) => s.trim()).filter(Boolean);
 
-    setSaving(false);
+      const nutritionPayload = {
+        user_id: userData.user.id,
+        height_cm: h,
+        weight_kg: w,
+        target_weight_kg: targetWeight ? parseFloat(targetWeight) : null,
+        activity_level: activity as Activity,
+        goal: goal as Goal,
+        experience: experience || null,
+        training_days_per_week: parseInt(trainingDays),
+        is_pregnant: gender === "female" ? isPregnant : false,
+        pregnancy_weeks: gender === "female" && isPregnant && pregnancyWeeks ? parseInt(pregnancyWeeks) : null,
+        is_breastfeeding: gender === "female" ? isBreastfeeding : false,
+        allergies: allergies.length > 0 ? allergies : [],
+        disliked_foods: disliked.length > 0 ? disliked : [],
+        dietary_pref: dietaryPref || null,
+        medical_conditions: medical || null,
+        physical_limitations: limitations || null,
+        diet_budget: dietBudget || "medium",
+        meals_per_day: parseInt(mealsPerDay) || 4,
+        equipment_pref: equipmentPref,
+        bmr: macros.bmr,
+        tdee: macros.tdee,
+        target_calories: macros.target_calories,
+        protein_g: macros.protein_g,
+        carbs_g: macros.carbs_g,
+        fats_g: macros.fats_g,
+        completed_at: new Date().toISOString(),
+      };
 
-    if (pErr || nErr) {
-      toast.error("No se pudo guardar el formulario");
-      return;
+      console.log("Nutrition payload:", nutritionPayload);
+
+      const { error: nErr } = await supabase
+        .from("nutrition_profile")
+        .upsert(nutritionPayload, { onConflict: "user_id" });
+
+      if (nErr) {
+        console.error("Nutrition error:", nErr);
+        console.error("   Message:", nErr.message);
+        console.error("   Details:", nErr.details);
+        console.error("   Hint:", nErr.hint);
+        console.error("   Code:", nErr.code);
+        toast.error("Error: " + nErr.message);
+        return;
+      }
+
+      toast.success("Plan calculado ✨");
+      qc.invalidateQueries();
+      navigate({ to: "/dashboard/alimentacion" });
+
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      toast.error("Error inesperado al guardar");
+    } finally {
+      setSaving(false);
     }
-    toast.success("Plan calculado ✨");
-    qc.invalidateQueries();
-    navigate({ to: "/dashboard/alimentacion" });
   }
 
   const progress = (step / TOTAL_STEPS) * 100;
@@ -235,7 +269,7 @@ function FormularioPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tw">Peso objetivo (kg) <span className="text-muted-foreground">— opcional</span></Label>
+              <Label htmlFor="tw">Peso objetivo (kg) <span className="text-muted-foreground">â€” opcional</span></Label>
               <Input id="tw" type="number" min={30} max={300} step="0.1" value={targetWeight} onChange={(e) => setTargetWeight(e.target.value)} placeholder="65" />
             </div>
           </>
@@ -247,7 +281,7 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label>Nivel de actividad cotidiana</Label>
-              <p className="text-xs text-muted-foreground">No incluye los días que entrenas — eso lo pones aparte abajo.</p>
+              <p className="text-xs text-muted-foreground">No incluye los días que entrenas â€” eso lo pones aparte abajo.</p>
               <RadioGroup value={activity} onValueChange={(v) => setActivity(v as Activity)} className="grid gap-2">
                 {(["sedentary", "moderate", "active"] as const).map((a) => (
                   <Label
@@ -284,7 +318,7 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Experiencia entrenando</Label>
               <Select value={experience} onValueChange={(v) => setExperience(v as any)}>
-                <SelectTrigger><SelectValue placeholder="Selecciona…" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Seleccionaâ€¦" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner">Principiante (&lt; 6 meses)</SelectItem>
                   <SelectItem value="intermediate">Intermedio (6 m - 2 años)</SelectItem>
@@ -296,14 +330,14 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Frecuencia con la que deseas entrenar</Label>
               <Select value={trainingDays} onValueChange={setTrainingDays}>
-                <SelectTrigger><SelectValue placeholder="Selecciona días por semana…" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecciona días por semanaâ€¦" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 día por semana — Full body</SelectItem>
-                  <SelectItem value="2">2 días por semana — Torso / Piernas</SelectItem>
-                  <SelectItem value="3">3 días por semana — Push / Pull / Piernas</SelectItem>
-                  <SelectItem value="4">4 días por semana — Upper / Lower x2</SelectItem>
-                  <SelectItem value="5">5 días por semana — PPL + Upper / Lower</SelectItem>
-                  <SelectItem value="6">6 días por semana — PPL x2</SelectItem>
+                  <SelectItem value="1">1 día por semana â€” Full body</SelectItem>
+                  <SelectItem value="2">2 días por semana â€” Torso / Piernas</SelectItem>
+                  <SelectItem value="3">3 días por semana â€” Push / Pull / Piernas</SelectItem>
+                  <SelectItem value="4">4 días por semana â€” Upper / Lower x2</SelectItem>
+                  <SelectItem value="5">5 días por semana â€” PPL + Upper / Lower</SelectItem>
+                  <SelectItem value="6">6 días por semana â€” PPL x2</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
@@ -316,7 +350,7 @@ function FormularioPage() {
               <Select value={mealsPerDay} onValueChange={setMealsPerDay}>
                 <SelectTrigger><SelectValue placeholder="¿Cuántas comidas haces al día?" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="3">3 comidas (desayuno · comida · cena)</SelectItem>
+                  <SelectItem value="3">3 comidas (desayuno Â· comida Â· cena)</SelectItem>
                   <SelectItem value="4">4 comidas (+ una colación)</SelectItem>
                   <SelectItem value="5">5 comidas (2 colaciones)</SelectItem>
                 </SelectContent>
@@ -388,7 +422,7 @@ function FormularioPage() {
                       placeholder="Ej. 18"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Añadimos energía extra desde el 2.º trimestre (+340 kcal) y aún más en el 3.º (+450 kcal).
+                      Añadimos energía extra desde el 2.Âº trimestre (+340 kcal) y aún más en el 3.Âº (+450 kcal).
                     </p>
                   </div>
                 )}
@@ -405,12 +439,12 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label htmlFor="al">Alergias o intolerancias (separadas por coma)</Label>
-              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secos…" />
+              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secosâ€¦" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="dl">Alimentos que NO te gustan (separados por coma)</Label>
-              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígado…" />
+              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígadoâ€¦" />
               <p className="text-xs text-muted-foreground">La IA evitará estos alimentos al armar tu menú.</p>
             </div>
 
@@ -463,15 +497,15 @@ function FormularioPage() {
                 id="lim"
                 value={limitations}
                 onChange={(e) => setLimitations(e.target.value)}
-                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con menisco…"
+                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con meniscoâ€¦"
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">Evitaremos ejercicios que agraven estas zonas.</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="med">Condiciones médicas relevantes <span className="text-muted-foreground">— opcional</span></Label>
-              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensión…" />
+              <Label htmlFor="med">Condiciones médicas relevantes <span className="text-muted-foreground">â€” opcional</span></Label>
+              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensiónâ€¦" />
             </div>
           </>
         )}
@@ -481,8 +515,8 @@ function FormularioPage() {
             <SectionTitle title="Revisar y guardar" subtitle="Verifica que todo esté correcto." />
             <ReviewRow label="Género" value={gender === "male" ? "Hombre" : gender === "female" ? "Mujer" : "Otro"} />
             <ReviewRow label="Edad" value={`${calcAge(dob)} años`} />
-            <ReviewRow label="Altura / Peso" value={`${heightCm} cm · ${weightKg} kg`} />
-            <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "—"} />
+            <ReviewRow label="Altura / Peso" value={`${heightCm} cm Â· ${weightKg} kg`} />
+            <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "â€”"} />
             <ReviewRow label="Objetivo" value={goal} />
             <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
             <ReviewRow label="Comidas al día" value={`${mealsPerDay} comidas`} />
@@ -538,3 +572,4 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
