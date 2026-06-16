@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+﻿import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -78,15 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BlackGYM — Entrena. Come. Repite." },
-      { name: "description", content: "App fitness con rutinas y planes de nutrición personalizados por IA." },
+      { title: "BlackGYM â€” Entrena. Come. Repite." },
+      { name: "description", content: "App fitness con rutinas y planes de nutriciÃ³n personalizados por IA." },
       { name: "author", content: "BlackGYM" },
-      { property: "og:title", content: "BlackGYM — Entrena. Come. Repite." },
-      { property: "og:description", content: "App fitness con rutinas y planes de nutrición personalizados por IA." },
+      { property: "og:title", content: "BlackGYM â€” Entrena. Come. Repite." },
+      { property: "og:description", content: "App fitness con rutinas y planes de nutriciÃ³n personalizados por IA." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "BlackGYM — Entrena. Come. Repite." },
-      { name: "twitter:description", content: "App fitness con rutinas y planes de nutrición personalizados por IA." },
+      { name: "twitter:title", content: "BlackGYM â€” Entrena. Come. Repite." },
+      { name: "twitter:description", content: "App fitness con rutinas y planes de nutriciÃ³n personalizados por IA." },
       { name: "theme-color", content: "#0F0F0F" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -151,3 +151,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
