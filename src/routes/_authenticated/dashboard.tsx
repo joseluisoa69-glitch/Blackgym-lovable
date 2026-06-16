@@ -13,9 +13,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 const navItems: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/dashboard", label: "Inicio", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/rutina", label: "Rutina", icon: Dumbbell },
-  { to: "/dashboard/alimentacion", label: "AlimentaciÃ³n", icon: Apple },
+  { to: "/dashboard/alimentacion", label: "Alimentación", icon: Apple },
   { to: "/dashboard/progreso", label: "Progreso", icon: TrendingUp },
-  { to: "/dashboard/camara", label: "CÃ¡mara", icon: Camera },
+  { to: "/dashboard/camara", label: "Cámara", icon: Camera },
   { to: "/dashboard/formulario", label: "Formulario", icon: ClipboardList },
 ];
 
@@ -28,7 +28,7 @@ function DashboardLayout() {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    toast.success("SesiÃ³n cerrada");
+    toast.success("Sesión cerrada");
     navigate({ to: "/auth", replace: true });
   }
 

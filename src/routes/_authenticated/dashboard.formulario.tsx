@@ -269,7 +269,7 @@ function FormularioPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tw">Peso objetivo (kg) <span className="text-muted-foreground">â€” opcional</span></Label>
+              <Label htmlFor="tw">Peso objetivo (kg) <span className="text-muted-foreground">— opcional</span></Label>
               <Input id="tw" type="number" min={30} max={300} step="0.1" value={targetWeight} onChange={(e) => setTargetWeight(e.target.value)} placeholder="65" />
             </div>
           </>
@@ -281,7 +281,7 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label>Nivel de actividad cotidiana</Label>
-              <p className="text-xs text-muted-foreground">No incluye los días que entrenas â€” eso lo pones aparte abajo.</p>
+              <p className="text-xs text-muted-foreground">No incluye los días que entrenas — eso lo pones aparte abajo.</p>
               <RadioGroup value={activity} onValueChange={(v) => setActivity(v as Activity)} className="grid gap-2">
                 {(["sedentary", "moderate", "active"] as const).map((a) => (
                   <Label
@@ -318,7 +318,7 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Experiencia entrenando</Label>
               <Select value={experience} onValueChange={(v) => setExperience(v as any)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionaâ€¦" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecciona"¦" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner">Principiante (&lt; 6 meses)</SelectItem>
                   <SelectItem value="intermediate">Intermedio (6 m - 2 años)</SelectItem>
@@ -330,14 +330,14 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Frecuencia con la que deseas entrenar</Label>
               <Select value={trainingDays} onValueChange={setTrainingDays}>
-                <SelectTrigger><SelectValue placeholder="Selecciona días por semanaâ€¦" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecciona días por semana"¦" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 día por semana â€” Full body</SelectItem>
-                  <SelectItem value="2">2 días por semana â€” Torso / Piernas</SelectItem>
-                  <SelectItem value="3">3 días por semana â€” Push / Pull / Piernas</SelectItem>
-                  <SelectItem value="4">4 días por semana â€” Upper / Lower x2</SelectItem>
-                  <SelectItem value="5">5 días por semana â€” PPL + Upper / Lower</SelectItem>
-                  <SelectItem value="6">6 días por semana â€” PPL x2</SelectItem>
+                  <SelectItem value="1">1 día por semana — Full body</SelectItem>
+                  <SelectItem value="2">2 días por semana — Torso / Piernas</SelectItem>
+                  <SelectItem value="3">3 días por semana — Push / Pull / Piernas</SelectItem>
+                  <SelectItem value="4">4 días por semana — Upper / Lower x2</SelectItem>
+                  <SelectItem value="5">5 días por semana — PPL + Upper / Lower</SelectItem>
+                  <SelectItem value="6">6 días por semana — PPL x2</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
@@ -350,7 +350,7 @@ function FormularioPage() {
               <Select value={mealsPerDay} onValueChange={setMealsPerDay}>
                 <SelectTrigger><SelectValue placeholder="¿Cuántas comidas haces al día?" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="3">3 comidas (desayuno Â· comida Â· cena)</SelectItem>
+                  <SelectItem value="3">3 comidas (desayuno · comida · cena)</SelectItem>
                   <SelectItem value="4">4 comidas (+ una colación)</SelectItem>
                   <SelectItem value="5">5 comidas (2 colaciones)</SelectItem>
                 </SelectContent>
@@ -439,12 +439,12 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label htmlFor="al">Alergias o intolerancias (separadas por coma)</Label>
-              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secosâ€¦" />
+              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secos"¦" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="dl">Alimentos que NO te gustan (separados por coma)</Label>
-              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígadoâ€¦" />
+              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígado"¦" />
               <p className="text-xs text-muted-foreground">La IA evitará estos alimentos al armar tu menú.</p>
             </div>
 
@@ -497,15 +497,15 @@ function FormularioPage() {
                 id="lim"
                 value={limitations}
                 onChange={(e) => setLimitations(e.target.value)}
-                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con meniscoâ€¦"
+                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con menisco"¦"
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">Evitaremos ejercicios que agraven estas zonas.</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="med">Condiciones médicas relevantes <span className="text-muted-foreground">â€” opcional</span></Label>
-              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensiónâ€¦" />
+              <Label htmlFor="med">Condiciones médicas relevantes <span className="text-muted-foreground">— opcional</span></Label>
+              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensión"¦" />
             </div>
           </>
         )}
@@ -515,8 +515,8 @@ function FormularioPage() {
             <SectionTitle title="Revisar y guardar" subtitle="Verifica que todo esté correcto." />
             <ReviewRow label="Género" value={gender === "male" ? "Hombre" : gender === "female" ? "Mujer" : "Otro"} />
             <ReviewRow label="Edad" value={`${calcAge(dob)} años`} />
-            <ReviewRow label="Altura / Peso" value={`${heightCm} cm Â· ${weightKg} kg`} />
-            <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "â€”"} />
+            <ReviewRow label="Altura / Peso" value={`${heightCm} cm · ${weightKg} kg`} />
+            <ReviewRow label="Actividad" value={activity ? ACTIVITY_LABEL[activity as Activity] : "—"} />
             <ReviewRow label="Objetivo" value={goal} />
             <ReviewRow label="Días de gym/semana" value={`${trainingDays} días`} />
             <ReviewRow label="Comidas al día" value={`${mealsPerDay} comidas`} />
