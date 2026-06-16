@@ -318,7 +318,7 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Experiencia entrenando</Label>
               <Select value={experience} onValueChange={(v) => setExperience(v as any)}>
-                <SelectTrigger><SelectValue placeholder="Selecciona"" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner">Principiante (&lt; 6 meses)</SelectItem>
                   <SelectItem value="intermediate">Intermedio (6 m - 2 años)</SelectItem>
@@ -572,6 +572,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
 
 
 
