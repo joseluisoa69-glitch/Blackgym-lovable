@@ -330,7 +330,7 @@ function FormularioPage() {
             <div className="space-y-2">
               <Label>Frecuencia con la que deseas entrenar</Label>
               <Select value={trainingDays} onValueChange={setTrainingDays}>
-                <SelectTrigger><SelectValue placeholder="Selecciona días por semana"¦" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecciona días por semana" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">1 día por semana — Full body</SelectItem>
                   <SelectItem value="2">2 días por semana — Torso / Piernas</SelectItem>
@@ -439,12 +439,12 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label htmlFor="al">Alergias o intolerancias (separadas por coma)</Label>
-              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secos"¦" />
+              <Input id="al" value={allergiesText} onChange={(e) => setAllergiesText(e.target.value)} placeholder="lactosa, frutos secos" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="dl">Alimentos que NO te gustan (separados por coma)</Label>
-              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígado"¦" />
+              <Input id="dl" value={dislikedText} onChange={(e) => setDislikedText(e.target.value)} placeholder="brócoli, atún, hígado" />
               <p className="text-xs text-muted-foreground">La IA evitará estos alimentos al armar tu menú.</p>
             </div>
 
@@ -497,7 +497,7 @@ function FormularioPage() {
                 id="lim"
                 value={limitations}
                 onChange={(e) => setLimitations(e.target.value)}
-                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con menisco"¦"
+                placeholder="Ej. dolor lumbar, hombro derecho con tendinitis, rodilla derecha con menisco"
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">Evitaremos ejercicios que agraven estas zonas.</p>
@@ -505,7 +505,7 @@ function FormularioPage() {
 
             <div className="space-y-2">
               <Label htmlFor="med">Condiciones médicas relevantes <span className="text-muted-foreground">— opcional</span></Label>
-              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensión"¦" />
+              <Input id="med" value={medical} onChange={(e) => setMedical(e.target.value)} placeholder="diabetes, hipertensión" />
             </div>
           </>
         )}
@@ -572,5 +572,6 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
 
 
